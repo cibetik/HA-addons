@@ -26,18 +26,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Convert repository name to lowercase
-        run: |
-          echo "LOWER_REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.LOWER_REPO_NAME }}/ha-addons:latest
-            ghcr.io/${{ env.LOWER_REPO_NAME }}/ha-addons:${{ github.sha }}
+            ghcr.io/cibetik/ha-addons:latest
+            ghcr.io/cibetik/ha-addons:${{ github.sha }}
 
       - name: Log out from GitHub Docker Registry
         run: docker logout ghcr.io
