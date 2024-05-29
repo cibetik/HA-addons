@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odjezdy autobusů na Depo Hostivař</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+j0+4xv5vZlObb3otXvMWy4+t4U1+aR6JvJQ9UY" crossorigin="anonymous">
+    <!-- Google Fonts - Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fff;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .remaining-time {
+            font-size: 20px;
+            font-weight: bold;
+            color: #198754;
+        }
+
+        .departed {
+            color: #dc3545;
+        }
+
+        .delay-invisible {
+            font-size: 16px;
+            color: #ffffff00;
+        }
+
+        .delay-info {
+            font-size: 16px;
+            color: #6c757d;
+        }
+
+        .delay-warning {
+            color: orange; /* Orange color for delays greater than 30 seconds */
+        }
+
+        .delay-error {
+            color: red; /* Red color for delays greater than 3 minutes */
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .form-switch {
+            padding-bottom: 10px;
+        }
+        .btn-map {
+            padding: 0; /* Remove padding */
+            background-color: transparent; /* Transparent background */
+            border: none; /* Remove border */
+            cursor: pointer; /* Add pointer cursor */
+            transition: transform 0.2s ease-in-out; /* Add smooth transition */
+        }
+        
+        .btn-map:hover {
+            transform: scale(1.1); /* Add slight scale effect on hover */
+        }
+        
+        .map-icon {
+            height: 20px;
+            width: auto;
+        }
+        
+}
+
+.map-icon {
+    height: 20px;
+    width: auto;
+    margin-right: 5px;
+}
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Odjezdy autobusů na Depo Hostivař</h1>
+
+        <!-- Departure source switcher -->
+        <div class="form-check form-switch mt-3">
+            <input class="form-check-input" type="checkbox" id="departureSwitch" checked aria-label="Přepínač zdroje odjezdů">
+            <label class="form-check-label" for="departureSwitch">Z Malého Háje</label>
+        </div>
+
+        <div class="cards mt-4">
+            <!-- Departure cards will be dynamically populated here -->
+        </div>
+        
+        <div class="error-message" id="errorMessage" style="display: none;">
+            Nelze načíst data odjezdů. Zkuste to prosím později.
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+j0+4xv5vZlObb3otXvMWy4+t4U1+aR6JvJQ9UY" crossorigin="anonymous"></script>
+    <script>
+        function formatDelay(delay) {
+            const minutes = Math.floor(delay / 60);
+            const seconds = delay % 60;
+            if (minutes === 0) {
+                return `${seconds}s`;
+            } else if (seconds === 0) {
+                return `${minutes} min`;
+            } else {
+                return `${minutes} min, ${seconds} s`;
+            }
+        }
+
+        function formatRemainingTime(diffSeconds) {
+            const diffSecs = Math.floor(diffSeconds / 1000);
+            const minutes = Math.floor(diffSecs / 60);
+            const seconds = diffSecs % 60;
+          
+            if (diffSeconds <= 0) {
+              if (minutes === 0) {
+                return `před ${seconds} s`;
+              } else {
+                return `před ${minutes} min, ${seconds} s`;
+              }
+            }
+          
+            if (minutes === 0) {
+              return `za ${seconds} s`;
+            } else {
+              return `za ${minutes} min, ${seconds} s`;
+            }
+        }
+
+        function fetchAndRefreshDepartures(source) {
+            fetch('/' + source)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const departuresContainer = document.querySelector('.cards');
+                    departuresContainer.innerHTML = ''; // Clear existing departures
+                    data.departures.forEach(departure => {
+                        const now = new Date();
+                        const departureTime = new Date(departure.departureTime);
+                        const diffSeconds = departureTime - now;
+
+                        const remainingTimeClass = diffSeconds < 0 ? 'departed' : '';
+                        const delayInfo = formatDelay(departure.delay); // Format delay
+                        const remainingTime = formatRemainingTime(diffSeconds); // Format delay
+
+                        let delayClass = 'delay-info'; // Delay class for styling
+                        if (departure.delay < 3 && departure.delay >= 0){
+                            delayClass = 'delay-invisible';
+                        } else if (departure.delay > 30 && departure.delay < 180) {
+                            delayClass = 'delay-warning'; // Red color for delays > 3 minutes
+                        } else if (departure.delay > 180) {
+                            delayClass = 'delay-error'; // Orange color for delays > 30 seconds
+                        }
+                        
+                        departuresContainer.innerHTML += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="remaining-time ${remainingTimeClass}">${remainingTime}</span>
+                                    <span class="${delayClass}">Zpoždění: ${delayInfo}</span> <!-- Include delay information -->
+                                    <button class="btn btn-map position-absolute bottom-0 end-0"  onclick="openMap('${departure.trip_id}')"> <img src="location-map.png" alt="Poloha" class="map-icon"></button>
+                                </div>
+                                <h2>Linka: ${departure.routeShortName}</h2>
+                                <p><strong>Předpokládáný odjezd:</strong> ${departureTime.toLocaleTimeString([], { hour12: false })}</p>
+                                ${departure.lastStopName ? `<p><strong>Poslední zastávka:</strong> ${departure.lastStopName}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                    document.getElementById('errorMessage').style.display = 'none'; // Hide error message if any
+                })
+                .catch(error => {
+                    console.error('Error fetching departure data:', error);
+                    document.getElementById('errorMessage').style.display = 'block'; // Show error message
+                });
+        }
+
+        function openMap(tripId) {
+            const url = `map?trip_id=${tripId}`;
+            window.open(url, '_blank');
+        }
+
+        document.getElementById('departureSwitch').addEventListener('change', function () {
+            const source = this.checked ? 'home' : 'depo';
+            fetchAndRefreshDepartures(source);
+
+            const titleElement = document.querySelector('h1');
+            titleElement.textContent = this.checked ? 'Odjezdy autobusů na Depo Hostivař' : 'Odjezdy autobusů z Depo Hostivař';
+        });
+
+        setInterval(function () {
+            const source = document.getElementById('departureSwitch').checked ? 'home' : 'depo';
+            fetchAndRefreshDepartures(source);
+        }, 15000); // 15 seconds
+
+        // Initial fetch and display of departures from home
+        fetchAndRefreshDepartures('home');
+    </script>
+</body>
+</html>

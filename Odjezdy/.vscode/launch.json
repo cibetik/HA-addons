@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Node",
+        "program": "${workspaceFolder}/app.js",
+        "runtimeArgs": [
+          "--inspect"
+        ],
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "console": "integratedTerminal"
+      },
+      {
+        "type": "msedge",
+        "request": "launch",
+        "name": "Client",
+        "url": "http://localhost:8001"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Server/Client",
+        "configurations": ["Node", "Client"],
+        "stopAll": true
+      }
+    ]
+  }
