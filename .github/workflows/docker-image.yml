@@ -28,9 +28,7 @@ jobs:
 
       - name: Convert repository name to lowercase
         run: |
-          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "Lowercase repository name: $REPO_NAME"
-          echo "::set-env name=LOWER_REPO_NAME::$REPO_NAME"
+          echo "LOWER_REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
