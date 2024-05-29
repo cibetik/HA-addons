@@ -14,14 +14,28 @@ COPY . .
 COPY run.sh /app/run.sh
 
 # Update the package list and install tzdata
-RUN apk add -U tzdata
-ENV TZ=Europe/Berlin
-RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+# RUN apk add -U tzdata
+# ENV TZ=Europe/Berlin
+# RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+RUN apt-get update && \
+apt-get install -yq tzdata && \
+ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+dpkg-reconfigure -f noninteractive tzdata
+
+ENV TZ="Europe/Berlin"
 
 # Install necessary packages on our Alpine Linux
-RUN apk add --no-cache \
-    nodejs \
-    npm
+#RUN apt install
+#    nodejs \
+#    npm
+
+    # Install Node.js
+RUN apt-get install --yes curl
+RUN curl --silent --location https://deb.nodesource.com/setup_4.x | sudo bash -
+RUN apt-get install --yes nodejs
+RUN apt-get install --yes build-essential
+
 
 RUN npm install express
 RUN npm install os
