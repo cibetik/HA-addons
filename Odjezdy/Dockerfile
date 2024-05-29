@@ -18,10 +18,10 @@ COPY run.sh /app/run.sh
 # ENV TZ=Europe/Berlin
 # RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
-RUN apt-get update && \
-apt-get install -yq tzdata && \
-ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-dpkg-reconfigure -f noninteractive tzdata
+# RUN apt-get update && \
+# apt-get install -yq tzdata && \
+# ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+# dpkg-reconfigure -f noninteractive tzdata
 
 ENV TZ="Europe/Berlin"
 
