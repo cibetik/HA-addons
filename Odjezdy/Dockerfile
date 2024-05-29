@@ -14,9 +14,9 @@ COPY . .
 COPY run.sh /app/run.sh
 
 # Update the package list and install tzdata
-RUN apk add -U tzdata
-ENV TZ=Europe/Berlin
-RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+# RUN apk add -U tzdata
+# ENV TZ=Europe/Berlin
+# RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 # Install necessary packages on our Alpine Linux
 RUN apk add --no-cache \
