@@ -166,7 +166,9 @@ async function fetchDepartureData(fromHome) {
   const timeFrom = getCurrentIsoDateTime(120);
   const url = `${apiUrl}/pid/departureboards?ids[]=${stopIDs.join("&ids[]=")}&minutesBefore=${minutesBefore}&minutesAfter=${minutesAfter}&timeFrom=${timeFrom}&includeMetroTrains=${includeMetroTrains}&airCondition=${airCondition}&preferredTimezone=${preferredTimezone}&mode=${mode}&order=${order}&filter=${filter}&skip=${skip}&limit=${limit}`;
 
+
   try {
+    console.log('Fetching departures data')
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
@@ -175,6 +177,7 @@ async function fetchDepartureData(fromHome) {
     });
 
     if (!response.ok) {
+      console.log(`Fetching departures data: HTTP error (Status: ${response.status})`)
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
@@ -187,6 +190,8 @@ async function fetchDepartureData(fromHome) {
 
 
 async function fetchRouteData(tripId) {
+  console.log(`Fetching routes data for ${tripId}`)
+  
   const response = await fetch("https://mapa.pid.cz/getShape.php", {
     method: 'post',
 	  body: JSON.stringify({ "id": tripId }),
@@ -201,6 +206,7 @@ async function fetchRouteData(tripId) {
   });
 
   if (!response.ok) {
+    console.log(`Fetching routes data: HTTP error (Status: ${response.status})`)
     throw new Error(`HTTP error! Status: ${response.status}`);
   }
 
@@ -208,10 +214,12 @@ async function fetchRouteData(tripId) {
   return data;
 }
 
-async function fetchLivePosition(trip_id) {
-  const url = `${apiUrl}/vehiclepositions/${trip_id}?includeNotTracking=false&includePositions=false&preferredTimezone=Europe_Prague`;
+async function fetchLivePosition(tripId) {
+  const url = `${apiUrl}/vehiclepositions/${tripId}?includeNotTracking=false&includePositions=false&preferredTimezone=Europe_Prague`;
 
   try {
+    console.log(`Fetching live position for ${tripId}`)
+
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
@@ -220,6 +228,7 @@ async function fetchLivePosition(trip_id) {
     });
 
     if (!response.ok) {
+      console.log(`Fetching live position data: HTTP error (Status: ${response.status})`)
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
