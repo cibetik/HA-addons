@@ -1,7 +1,7 @@
 name: "Odjezdy"
 description: "Odjezdy dopravních prostředků ze zastávek"
-version: "1.0.8"
-image: ghcr.io/cibetik/ha-addons:latest
+version: "1.0.9"
+image: "ghcr.io/cibetik/ha-addons:latest"
 slug: "departures"
 init: false
 arch:
