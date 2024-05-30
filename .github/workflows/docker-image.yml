@@ -38,8 +38,8 @@ jobs:
           context: ./Odjezdy
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/ha-addons:latest
-            ghcr.io/${{ github.repository }}/ha-addons:${{ github.sha }}
+            ghcr.io/cibetik/ha-addons:latest
+            ghcr.io/cibetik/ha-addons:${{ github.sha }}
 
       - name: Log out from GitHub Docker Registry
         run: docker logout ghcr.io

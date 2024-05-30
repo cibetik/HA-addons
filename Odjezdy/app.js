@@ -1,7 +1,4 @@
 const express = require("express");
-const fs = require( 'fs' )
-
-const yaml = require('js-yaml');
 const os = require("os");
 const path = require("path");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args)); // explained here https://www.npmjs.com/package/node-fetch
