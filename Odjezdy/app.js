@@ -177,12 +177,11 @@ async function fetchDepartureData(fromHome) {
     });
 
     if (!response.ok) {
-      console.log(`Fetching departures data: HTTP error (Status: ${response.status})`)
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      //console.log(`Fetching departures data: HTTP error (Status: ${response.status})`)
+      //throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log(data)
     return data;
   } catch (error) {
     console.error("Error fetching departure data:", error);
