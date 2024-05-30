@@ -1,4 +1,4 @@
-ARG BUILD_FROM
+ARG BUILD_FROM="homeassistant/aarch64-base:latest"
 FROM $BUILD_FROM
 
 # Use Bash shell with pipefail option for all subsequent RUN commands
