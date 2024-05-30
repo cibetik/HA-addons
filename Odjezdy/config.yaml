@@ -1,6 +1,6 @@
 name: "Odjezdy"
 description: "Odjezdy dopravních prostředků ze zastávek"
-version: "1.0.11"
+version: "1.0.12"
 image: "cibetik/odjezdy-{arch}"
 slug: "departures"
 init: false
