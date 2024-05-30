@@ -8,8 +8,10 @@ ENV \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY rootfs/usr/bin/* /usr/bin/
-COPY rootfs_supervisor/etc/supervisor_scripts/common /etc/supervisor_scripts/
+COPY .devcontainer/common/rootfs /
+COPY .devcontainer/common/rootfs_supervisor /
+COPY .devcontainer/common/install /tmp/common/install
+COPY .devcontainer/rootfs /
 
 # Create a directory for the app
 WORKDIR /usr/src/app
@@ -17,22 +19,17 @@ WORKDIR /usr/src/app
 # Copy the application files
 COPY public ./public
 COPY views ./views
-COPY . .
+COPY package.json ./package.json
+COPY app.js ./app.js
 COPY run.sh /app/run.sh
-
-
-#ENV http_proxy "http://webproxy.merck.com:8080"
-#ENV https_proxy "http://webproxy.merck.com:8081"
-#ENV no_proxy "localhost,.merck.com,127.0.0.1"
-
-#RUN apk update --no-check-certificate \
-#   && apk add --no-check-certificate bash curl
 
 # Update the package list and install tzdata
 RUN apt-get update \
     && apt-get install -y tzdata \
     && ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime \
     && dpkg-reconfigure --frontend noninteractive tzdata
+# Set the environment variable for the time zone
+ENV TZ=Europe/Berlin
 
 # Install Node.js and npm
 RUN apt-get install -y nodejs npm
@@ -41,18 +38,9 @@ RUN apt-get install -y nodejs npm
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the environment variable for the time zone
-ENV TZ=Europe/Berlin
-
-RUN npm install express
-RUN npm install os
-RUN npm install ejs
-RUN npm install path
-RUN npm install node-fetch
+RUN npm install
 
 # Install common
-COPY common/install /tmp/common/install
-
 RUN \
     bash devcontainer_init \
     && common_install_packages \

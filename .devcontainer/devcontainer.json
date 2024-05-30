@@ -1,0 +1,32 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+
+{
+	"name": "Odjezdy",
+	"context": "..",
+	"appPort": [8001],
+	"dockerFile": "../Odjezdy/DockerfileVS",
+	"runArgs": ["-e", "GIT_EDITOR=code --wait", "--privileged"],
+	"containerEnv": {
+	  "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+	},
+	"customizations": {
+	  "vscode": {
+		"extensions": ["timonwong.shellcheck", "esbenp.prettier-vscode"],
+		"settings": {
+		  "terminal.integrated.profiles.linux": {
+			"zsh": {
+			  "path": "/bin/bash"
+			}
+		  },
+		  "terminal.integrated.defaultProfile.linux": "bash",
+		  "editor.formatOnPaste": false,
+		  "editor.formatOnSave": true,
+		  "editor.formatOnType": true,
+		  "files.trimTrailingWhitespace": true
+		}
+	  }
+	},
+	"mounts": ["type=volume,target=/var/lib/docker"]
+  }
+  

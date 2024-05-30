@@ -1,6 +1,6 @@
 name: "Odjezdy"
 description: "Odjezdy dopravních prostředků ze zastávek"
-version: "1.0.7"
+version: "1.0.8"
 slug: "departures"
 init: false
 arch:
@@ -23,4 +23,3 @@ options:
 
 schema:
   APIKey: str
-

@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require( 'fs' )
 
 const yaml = require('js-yaml');
 const os = require("os");
@@ -7,19 +8,8 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 const app = express();
 const port = 8001;
 
-// Load the config.yaml file
-const configPath = path.join(__dirname, 'config.yaml');
-const fileContents = fs.readFileSync(configPath, 'utf8');
-
-// Parse the YAML file
-const config = yaml.load(fileContents);
-
-// Access the options
-const options = config.options;
-
-
 const apiUrl = "https://api.golemio.cz/v2";
-const apiToken = options.APIKey; //"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjc1NiwiaWF0IjoxNzE1ODYzMTQ2LCJleHAiOjExNzE1ODYzMTQ2LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiMjUxZjgzNmQtNmYyMy00MjM3LTg4N2EtODlmZWQ3N2EwMmRmIn0.UW4o1jLxWRmb16MtwlZgFywFTA_PN2X1kKQbDNLSpkY";
+const apiToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjc1NiwiaWF0IjoxNzE1ODYzMTQ2LCJleHAiOjExNzE1ODYzMTQ2LCJpc3MiOiJnb2xlbWlvIiwianRpIjoiMjUxZjgzNmQtNmYyMy00MjM3LTg4N2EtODlmZWQ3N2EwMmRmIn0.UW4o1jLxWRmb16MtwlZgFywFTA_PN2X1kKQbDNLSpkY";
 const homeStopIDs = ["U310Z2P", "U310Z2", "U3240Z3P"]; // Kutnohorská ("U310Z2P", "U310Z2"), Kardausova
 const depoStopIDs = ["U1071Z4", "U1071Z4P"]; // Depo Hostivař bus platform
 const minutesBefore = 2;
@@ -54,13 +44,28 @@ const getLocalIP = () => {
   return "127.0.0.1";
 };
 
-app.listen(port, () => {
-  const IP = getLocalIP();
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const currentTime = new Date();
+try {
+  //'172.30.33.2'
+  app.listen(port, () => {
+    const IP = getLocalIP();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const currentTime = new Date();
+  
+    console.log(`Server running at http://${IP}:${port}/ at time zone ${timezone}. Local time is: ${currentTime}`);
+  });
+} catch (error){
+  console.log(error)
+  console.log("Restarting")
 
-  console.log(`Server running at http://${IP}:${port}/ at time zone ${timezone}. Local time is: ${currentTime}`);
-});
+  app.listen(port, () => {
+    const IP = getLocalIP();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const currentTime = new Date();
+  
+    console.log(`Server running at http://${IP}:${port}/ at time zone ${timezone}. Local time is: ${currentTime}`);
+  });
+}
+
 
 // Endpoints
 app.get("/", async (req, res) => {
