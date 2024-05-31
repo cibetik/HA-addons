@@ -111,9 +111,8 @@ app.get("/depo", async (req, res) => {
       .filter((departure) => !excludedFromDepo.includes(departure.route.short_name))
       .map((departure) => ({
         routeShortName: departure.route.short_name,
-        departureTime: new Date(departure.departure_timestamp.predicted).toLocaleTimeString([], { hour12: false }),
+        departureTime: new Date(departure.departure_timestamp.predicted),
         lastStopName: departure.last_stop ? departure.last_stop.name : null,
-        remainingTime: calculateRemainingTime(departure.departure_timestamp.predicted),
         delay: departure.delay.seconds,
         trip_id: departure.trip.id
       }));
