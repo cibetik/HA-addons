@@ -5,7 +5,7 @@
 	"name": "Odjezdy",
 	"context": "..",
 	"appPort": [8001],
-	"dockerFile": "../Odjezdy/DockerfileVS",
+	"dockerFile": "../Odjezdy/.devcontainer/DockerfileVS",
 	"runArgs": ["-e", "GIT_EDITOR=code --wait", "--privileged"],
 	"containerEnv": {
 	  "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"

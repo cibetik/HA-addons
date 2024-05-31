@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 TAG=$1
-ARCHITECTURES=("amd64" "aarch64" "armv7")
+ARCHITECTURES=("aarch64")
 BUILD_FROM_BASE="homeassistant"
 CONFIG_FILE="config.yaml"
 

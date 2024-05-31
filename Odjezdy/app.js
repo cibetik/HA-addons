@@ -176,11 +176,6 @@ async function fetchDepartureData(fromHome) {
       },
     });
 
-    if (!response.ok) {
-      //console.log(`Fetching departures data: HTTP error (Status: ${response.status})`)
-      //throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -226,11 +221,6 @@ async function fetchLivePosition(tripId) {
         "X-Access-Token": apiToken,
       },
     });
-
-    if (!response.ok) {
-      console.log(`Fetching live position data: HTTP error (Status: ${response.status})`)
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
 
     const data = await response.json();
     return data.geometry.coordinates;

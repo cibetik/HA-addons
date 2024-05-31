@@ -8,20 +8,20 @@ ENV \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY .devcontainer/common/rootfs /
-COPY .devcontainer/common/rootfs_supervisor /
-COPY .devcontainer/common/install /tmp/common/install
-COPY .devcontainer/rootfs /
+COPY ../Odjezdy/.devcontainer/common/rootfs /
+COPY ../Odjezdy/.devcontainer/common/rootfs_supervisor /
+COPY ../Odjezdy/.devcontainer/common/install /tmp/common/install
+COPY ../Odjezdy/.devcontainer/rootfs /
 
 # Create a directory for the app
 WORKDIR /usr/src/app
 
 # Copy the application files
-COPY public ./public
-COPY views ./views
-COPY package.json ./package.json
-COPY app.js ./app.js
-COPY run.sh /app/run.sh
+COPY ../Odjezdy/public/ ./public
+COPY ../Odjezdy/views/ ./views
+COPY ../Odjezdy/package.json ./package.json
+COPY ../Odjezdy/app.js ./app.js
+COPY ../Odjezdy/run.sh /app/run.sh
 
 # Update the package list and install tzdata
 RUN apt-get update \
