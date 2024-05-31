@@ -195,7 +195,7 @@
 
       function openMap(tripId) {
         const url = `map?trip_id=${tripId}`;
-        window.open(url, "_blank");
+        window.location.href = url;
       }
 
       document.getElementById("departureSwitch").addEventListener("change", function () {
