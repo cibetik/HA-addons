@@ -162,7 +162,7 @@ async function fetchDepartureDataFromDepo() {
 
 async function fetchDepartureData(fromHome) {
   let stopIDs = fromHome ? homeStopIDs : depoStopIDs;
-  const timeFrom = getCurrentIsoDateTime(120);
+  const timeFrom = getCurrentIsoDateTime(60);
   const url = `${apiUrl}/pid/departureboards?ids[]=${stopIDs.join("&ids[]=")}&minutesBefore=${minutesBefore}&minutesAfter=${minutesAfter}&timeFrom=${timeFrom}&includeMetroTrains=${includeMetroTrains}&airCondition=${airCondition}&preferredTimezone=${preferredTimezone}&mode=${mode}&order=${order}&filter=${filter}&skip=${skip}&limit=${limit}`;
 
 
