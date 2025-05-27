@@ -65,9 +65,6 @@
         margin-top: 20px;
       }
 
-      .form-switch {
-        padding-bottom: 10px;
-      }
       .btn-map {
         padding: 0; /* Remove padding */
         background-color: transparent; /* Transparent background */
@@ -90,19 +87,30 @@
     </style>
   </head>
   <body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+j0+4xv5vZlObb3otXvMWy4+t4U1+aR6JvJQ9UY" crossorigin="anonymous"></script>
+
+    <script>
+      // Manual refresh button handler
+      document.getElementById("refresh-btn").addEventListener("click", function () {
+        const source = document.getElementById("departureSwitch").checked ? "home" : "depo";
+        fetchAndRefreshDepartures(source);
+      });
+    </script>
+
     <div class="container mt-5">
       <h1>Odjezdy autobusů na Depo Hostivař</h1>
 
-      <div style="display: flex; justify-content: space-between">
-       <!-- Departure source switcher -->
+      <div id="table-header" style="display: flex; justify-content: space-between; align-items: center">
+        <!-- Departure source switcher -->
         <div class="form-check form-switch mt-3">
-            <input class="form-check-input" type="checkbox" id="departureSwitch" checked aria-label="Přepínač zdroje odjezdů">
-            <label class="form-check-label" for="departureSwitch">Z Malého Háje</label>
+          <input class="form-check-input" type="checkbox" id="departureSwitch" checked aria-label="Přepínač zdroje odjezdů" />
+          <label class="form-check-label" for="departureSwitch">Z Malého Háje</label>
         </div>
-        <!-- Last refresh timestamp -->
-        <div>
-          <div id="last-refresh" style="font-size: small;">Aktualizace: </div>
-          <div id="countdown" style="font-size: small;"></div></div>
+        <!-- Last refresh timestamp and manual refresh button -->
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button id="refresh-btn" class="btn btn-outline-secondary" style="font-size: 1rem; padding: 0.35rem 1rem; border-radius: 0.375rem; font-weight: 500; box-shadow: none" title="Obnovit odjezdy" aria-label="Obnovit odjezdy">Obnovit</button>
+        </div>
       </div>
 
       <div class="cards mt-4">
@@ -112,8 +120,6 @@
       <div class="error-message" id="errorMessage" style="display: none">Nelze načíst data odjezdů. Zkuste to prosím později.</div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+j0+4xv5vZlObb3otXvMWy4+t4U1+aR6JvJQ9UY" crossorigin="anonymous"></script>
     <script>
       function formatDelay(delay) {
         const absDelay = Math.abs(delay);
@@ -128,9 +134,25 @@
         }
       }
 
+      function timeStringToSeconds(timeStr) {
+        const [h, m, s] = timeStr.split(":").map(Number);
+        return h * 3600 + m * 60 + s;
+      }
+
+      function diffMinutesText(metroDeparture, realArrivalToLastStop) {
+        const diffSeconds = timeStringToSeconds(metroDeparture) - timeStringToSeconds(realArrivalToLastStop);
+        const absSeconds = Math.abs(diffSeconds);
+        const minutes = Math.floor(absSeconds / 60);
+        const seconds = absSeconds % 60;
+        // Pad with leading zeros if needed
+        const mm = String(minutes).padStart(2, "0");
+        const ss = String(seconds).padStart(2, "0");
+        return `${mm}:${ss} na přestup`;
+      }
+
       function formatRemainingTime(diffSeconds) {
         const diffSecs = Math.floor(diffSeconds / 1000);
-        const minutes = (diffSecs >= 0) ? Math.floor(diffSecs / 60) : Math.ceil(diffSecs / 60);
+        const minutes = diffSecs >= 0 ? Math.floor(diffSecs / 60) : Math.ceil(diffSecs / 60);
         const seconds = diffSecs % 60;
 
         if (diffSeconds <= 0) {
@@ -149,20 +171,6 @@
       }
 
       function fetchAndRefreshDepartures(source) {
-        // Update the timestamp
-        const now = new Date();
-        document.getElementById("last-refresh").textContent = `Aktualizace: ${now.toLocaleTimeString()}`;
-
-          // Start the countdown
-          let countdown = 15;
-          const countdownInterval = setInterval(() => {
-              countdown--;
-              document.getElementById('countdown').textContent = `(-${countdown} s)`;
-              if (countdown === 0) {
-                clearInterval(countdownInterval);
-              }
-          }, 1000);
-  
         fetch(source)
           .then((response) => {
             return response.json();
@@ -197,7 +205,7 @@
                                 </div>
                                 <h2>Linka: ${departure.routeShortName}</h2>
                                 <p><strong>Předpokládáný odjezd:</strong> ${departureTime.toLocaleTimeString([], { hour12: false })}</p>
-                                ${departure.lastStopName ? `<p><strong>Poslední zastávka:</strong> ${departure.lastStopName}</p>` : ""}
+                                ${departure.lastStopName ? `<p><strong>Poslední zastávka:</strong> ${departure.lastStopName}</p><p>Depo Hostivař: ${departure.realArrivalToLastStop}</p><p>Odjezd metra: ${departure.metroDeparture} (${diffMinutesText(departure.metroDeparture, departure.realArrivalToLastStop)})</p>` : ""}
                             </div>
                         `;
             });
@@ -222,10 +230,11 @@
         titleElement.textContent = this.checked ? "Odjezdy autobusů na Depo Hostivař" : "Odjezdy autobusů z Depo Hostivař";
       });
 
-      setInterval(function () {
+      // Manual refresh button handler
+      document.getElementById("refresh-btn").addEventListener("click", function () {
         const source = document.getElementById("departureSwitch").checked ? "home" : "depo";
         fetchAndRefreshDepartures(source);
-      }, 15000); // 15 seconds
+      });
 
       // Initial fetch and display of departures from home
       fetchAndRefreshDepartures("home");
